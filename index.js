@@ -59,10 +59,10 @@ app.get('/', async (req, res) => {
         image: imageUrl,
         time: fullTime,
         new_url: newsUrl,
-        powerd_by: "🌴NB DEV SL🌴 ⚠️if you are using this API, give the credits to the owner⚠️"
+        creator: "Pink-Venom"
       };
 
-      res.json([newsData]);
+      res.json(newsData);
     } else {
       throw new Error('Failed to fetch data from the website');
     }
