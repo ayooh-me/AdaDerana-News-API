@@ -5,7 +5,7 @@ const cheerio = require('cheerio');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const url = 'https://sinhala.adaderana.lk/sinhala-hot-news.php';
+const urlderana = 'https://sinhala.adaderana.lk/sinhala-hot-news.php';
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
@@ -40,9 +40,9 @@ async function scrapeImage(newsUrl) {
 }
 
 // Route
-app.get('/', async (req, res) => {
+app.get('/derana', async (req, res) => {
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(urlderana);
     if (response.status === 200) {
       const $ = cheerio.load(response.data);
       const newsArticle = $('.story-text').first();
@@ -63,6 +63,45 @@ app.get('/', async (req, res) => {
       };
 
       res.json(newsData);
+    } else {
+      throw new Error('Failed to fetch data from the website');
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/ada', async (req, res) => {
+  try {
+       const url = 'https://www.ada.lk/latest-news/11';
+       const { data } = await axios.get(url);
+        if (response.status === 200) {
+        const $ = cheerio.load(data);
+        const latestNews = $('.cat-b-row').first(); // Get the first article
+        const link = latestNews.find('h5 a').attr('href');
+        const date = latestNews.find('.far.fa-clock').parent().text().trim();
+        const image = latestNews.find('img').attr('src');
+
+        const data2 = await axios.get(link);
+        const $2 = cheerio.load(data2.data);
+        const title = $2('title').text().trim();
+        const description = $2('.single-body-wrap p')
+        .map((i, el) => $(el).text().trim())
+        .get()
+        .join(' ');
+
+
+        // Create an object for the latest news
+        const latestNewsItem = {
+            title,
+            link,
+            date,
+            description,
+            image,
+            powerd_by: "PINK VENOM OFC" 
+        };
+
+      res.json(latestNewsItem);
     } else {
       throw new Error('Failed to fetch data from the website');
     }
